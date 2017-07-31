@@ -1,0 +1,22 @@
+
+body{
+	font-size: 18px;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 500;
+}
+/*
+.panel-primary>.panel-heading {
+    color: #fff;
+    background-color: #02cac8;
+    border-color: #02cac8;
+ }*/
+
+ #submit{
+ 	/*background-color: #02cac8;
+    border-color: #02cac8;*/
+ }
+
+.jumbotron {
+ 	background-color: #428bca;
+ 	color: white;
+ }
