@@ -3,19 +3,31 @@ body {
 	font-size: 18px;
 	font-family: 'Montserrat', sans-serif;
 }
-/*
-.panel-primary>.panel-heading {
-    color: #fff;
-    background-color: #02cac8;
-    border-color: #02cac8;
- }*/
-
- #submit{
- 	/*background-color: #02cac8;
-    border-color: #02cac8;*/
- }
 
 .jumbotron {
  	background-color: #428bca;
  	color: white;
+ }
+
+ .panel-heading span {
+	margin-top: -20px;
+	font-size: 15px;
+ }
+
+ .clickable {
+ 	cursor: pointer;
+ }
+
+ .remove {
+ 	cursor: pointer;
+ 	opacity: 0.5;
+ 	color: grey;
+ }
+
+ .remove:hover {
+ 	opacity: 1;
+ }
+
+ #current-time {
+ 	color: #f1c40f;
  }

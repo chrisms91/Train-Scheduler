@@ -1,19 +1,93 @@
 
-// Initialize Firebase
-  var config = {
+var config = {
     apiKey: "AIzaSyAeuNU__udzlfqEDzdjl4aPWWZBuou7AjI",
     authDomain: "train-scheduler-a7a90.firebaseapp.com",
     databaseURL: "https://train-scheduler-a7a90.firebaseio.com",
     projectId: "train-scheduler-a7a90",
     storageBucket: "train-scheduler-a7a90.appspot.com",
     messagingSenderId: "832309823771"
-  };
+};
 firebase.initializeApp(config);
 
 var database = firebase.database();
+var ref = database.ref();
 
 //currTime in military time
 var currentTime = moment().format('HH:mm');
+var keyArray = [];
+
+// Update table
+ref.on('child_added', function(snap) {
+
+	var trains = snap.val();
+	keyArray.push(snap.key);
+
+	//update table
+	$('#train-schedule').append(
+	  	'<tr class="train-info" data-key="' + snap.key + '">' + 
+	  		'<td>' + '<span id="trainName">' + trains.name + '</span></td>' + 
+	  		'<td>' + '<span id="trainDestination">' + trains.destination + '</span></td>' +
+	  		'<td>' + '<span id="trainFrequency">' + trains.frequency + '</span></td>' +
+	  		'<td>' + '<span id="trainNextArrival">' + trains.nextArrival + '</span></td>' +
+	  		'<td>' + '<span id="trainMinutesAway">' + trains.minutesAway + '</span> <span class="pull-right remove" data-key="' + snap.key + '"><i class="glyphicon glyphicon-remove"></i></span> </td>' +
+	  	'</tr>'
+ 	);
+
+});
+
+// function that calculates next arrival time and minutes away
+function predictTrainTime(firstTime, frequency) {
+
+	var tFreq = frequency;
+	var tFirst = firstTime;
+
+	//push back 1 year to make sure it comes before current time
+	var tFirstConverted = moment(tFirst, "hh:mm").subtract(1, 'years');
+
+	//get difference btw currenttime and first train time
+	var tDiff = moment().diff(moment(tFirstConverted), "minutes");
+
+	var tRemainder = tDiff % tFreq;
+
+	var tMinutesAway = tFreq - tRemainder;
+
+	var nextTrain = moment().add(tMinutesAway, 'minutes');
+	// console.log("arrival time: " + moment(nextTrain).format('hh:mm A'));
+
+	//save in array to return multiple values
+	return [tMinutesAway, nextTrain];
+
+}
+
+function updateTime() {
+
+	var currTime = moment().format('HH:mm A');
+	$('#current-time').html(currTime);
+
+
+	ref.on('child_added', function(snap) {
+
+		var trains = snap.val();
+
+		//calculate new times based on currTime
+		var newPredictTime = predictTrainTime(trains.firstTime, trains.frequency);
+		var newArrival = moment(newPredictTime[1]).format('hh:mm A');
+		var newMinutes = newPredictTime[0];
+
+		//update database
+		ref.child(snap.key).update({
+			"minutesAway": newMinutes,
+			"nextArrival": newArrival
+		});
+
+		//update html
+		$('[data-key="'+snap.key+'"]').find('#trainMinutesAway').html(newMinutes);
+		$('[data-key="'+snap.key+'"]').find('#trainNextArrival').html(newArrival);
+
+	})
+
+}
+
 
 $('#submit').on('click', function(event) {
 
@@ -34,7 +108,7 @@ $('#submit').on('click', function(event) {
 	console.log(nextArrival);
 	console.log(minutesAway);
 
-	database.ref().push({
+	ref.push({
 
 		name: trainName,
 		destination: trainDestination,
@@ -43,53 +117,48 @@ $('#submit').on('click', function(event) {
 		minutesAway: minutesAway,
 		firstTime: trainFirstTime
 
-	})
+	});
 
 });
 
-// function that calculates next arrival time and minutes away
-function predictTrainTime(firstTime, frequency) {
+//panel collapse
+$(document).on('click', '.panel-heading span.clickable', function(event){
 
-	var tFreq = frequency;
-	var tFirst = firstTime;
+    var $this = $(this);
 
-	//push back 1 year to make sure it comes before current time
-	var tFirstConverted = moment(tFirst, "hh:mm").subtract(1, 'years');
-	// console.log(tFirstConverted);
+	if(!$this.hasClass('panel-collapsed')) {
 
-	var tDiff = moment().diff(moment(tFirstConverted), "minutes");
-	// console.log(tDiff);
+		$this.parents('.panel').find('.panel-body').slideUp();
+		$this.addClass('panel-collapsed');
+		$this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
 
-	var tRemainder = tDiff % tFreq;
-	// console.log(tRemainder);
+	} else {
 
-	var tMinutesAway = tFreq - tRemainder;
-	// console.log(tMinutesAway);
+		$this.parents('.panel').find('.panel-body').slideDown();
+		$this.removeClass('panel-collapsed');
+		$this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
 
-	var nextTrain = moment().add(tMinutesAway, 'minutes');
-	console.log("arrival time: " + moment(nextTrain).format('hh:mm A'));
+	}
 
-	return [tMinutesAway, nextTrain];
+});
 
-}
+//Remove button
+$(document).on('click', '.remove', function(event) {
 
-database.ref().on('child_added', function(snap, prefChildKey) {
+	event.preventDefault();
 
-	var trains = snap.val();
-	console.log(trains);
+	var key = $(this).attr('data-key');
 
-	//update table
-	$('#train-schedule').append(
-  	'<tr>' + 
-  		'<td>' + '<span id="trainName">' + trains.name + '</span></td>' + 
-  		'<td>' + '<span id="trainDestination">' + trains.destination + '</span></td>' +
-  		'<td>' + '<span id="trainFrequency">' + trains.frequency + '</span></td>' +
-  		'<td>' + '<span id="trainNextArrival">' + trains.nextArrival + '</span></td>' +
-  		'<td>' + '<span id="trainMinutesAway">' + trains.minutesAway + '</span></td>' +
-  	'</tr>'
-  )
-})
+	//remove from database
+	ref.child(key).remove();
 
+	var $row = $('#train-schedule').find('[data-key="'+key+'"]');
+	$row.empty();
+
+});
+
+updateTime();
+setInterval(updateTime, 1000);
 
 
 

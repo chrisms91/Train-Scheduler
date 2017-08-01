@@ -32,6 +32,7 @@
 			<div class="text-center header">
 				<h1> Anytime is Train Time </h1>
 				<p> Choo Choo. Chee Chee.</p>
+				<h3> Current Time is <span id="current-time"></span></h3>
 			</div>
 		</div>
 
@@ -57,6 +58,7 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<h3 class="panel-title"> Add Train </h3>
+				<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
 			</div>
 			<div class="panel-body">
 				<form>
@@ -77,6 +79,31 @@
 						<input type="number" class="form-control" id="train-frequency">
 					</div>
 					<button id="submit" type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title"> Update Train </h3>
+				<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+			</div>
+			<div class="panel-body">
+				<form>
+					<div class="form-group">
+						<label for="train-name">Train Name</label>
+						<input type="text" class="form-control" id="update-name">
+					</div>
+					<div class="form-group">
+						<label for="train-destination">Destination</label>
+						<input type="text" class="form-control" id="update-destination">
+					</div>
+					<div class="form-group">
+						<label for="train-frequency">Frequency (min)</label>
+						<input type="text" class="form-control" id="update-frequency">
+					</div>
 				</form>
 			</div>
 		</div>
