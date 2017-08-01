@@ -119,6 +119,9 @@ $('#submit').on('click', function(event) {
 
 	});
 
+	//clear form values after submit
+	$('form').trigger("reset");
+
 });
 
 //panel collapse
@@ -157,8 +160,20 @@ $(document).on('click', '.remove', function(event) {
 
 });
 
+$('#pageDown').on('click', function(e) {
+
+	e.preventDefault();
+
+    $('html, body').animate({
+        scrollTop: $("#schedule").offset().top
+    }, 1500);
+})
+
+
+
 updateTime();
 setInterval(updateTime, 1000);
 
+var s = skrollr.init();
 
 
