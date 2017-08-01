@@ -159,4 +159,37 @@ hr {
 	text-align: justify;
 }
 
+@media screen and (max-width: 768px){
+
+	/*.bgimg-1, .bgimg-2, .bgimg-3 {
+		background-attachment: scroll;
+	}*/
+
+	.bgimg-1 {
+		min-height: 700px;
+	}
+
+	.bgimg-2 {
+		min-height: 200px;
+	}
+
+	.bgimg-3 {
+		min-height: 300px;
+	}
+
+	body, html {
+		font-size: 90%;
+	}
+
+	#logo {
+		font-size: 98%;
+	}
+
+	.border p {
+		font-size: 98%;
+	}
+
+
+}
+
 

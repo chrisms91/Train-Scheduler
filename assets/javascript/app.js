@@ -160,6 +160,7 @@ $(document).on('click', '.remove', function(event) {
 
 });
 
+//scroll to next section
 $('#pageDown').on('click', function(e) {
 
 	e.preventDefault();
@@ -167,6 +168,7 @@ $('#pageDown').on('click', function(e) {
     $('html, body').animate({
         scrollTop: $("#schedule").offset().top
     }, 1500);
+
 })
 
 
